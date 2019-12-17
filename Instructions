@@ -1,0 +1,154 @@
+==============================================================================================
+                                     SeisAcoMod2D 
+Parallel 2D Acoustic Finite Difference Seismic Modeling using the Staggered Grid
+This program generates synthetic seismogram for given 2D velocity and density subsurface model
+===============================================================================================
+
+Prerequisites
+=============
+    1. C/C++ compiler with support of MPI + OpenMP
+    2. PGI NVCC compiler (OpenACC/GPU codes)
+    3. Seismic Un*x package for visualisation of input/output data
+            https://github.com/JohnWStockwellJr/SeisUnix
+
+
+Seismic Un*x
+============
+
+     *---------------------------------------------------------------------------*    
+     *   Do the following change before installing Seismic Un*x package          *
+     *   1. Extract the package                                                  *
+     *   2. Go to following directory present in extracted folder                *
+     *          cd src/su/main/headers                                           *  
+     *   3. Open sustrip.c file and change line 83 as follow                     *
+     *                                                                           *
+     *           if (!getparstring("outpar", &outpar))   outpar = "/dev/tty" ;   *
+     *                                                                           *  
+     *   change it to                                                            *
+     *                                                                           *
+     *           if (!getparstring("outpar", &outpar))   outpar = "/dev/null" ;  *
+     *                                                                           * 
+     *   and then follow the installation instruction of Seismic Un*x.           *  
+     *---------------------------------------------------------------------------*
+
+    Installation instruction for Seismic Un*x can be found at:
+            https://github.com/JohnWStockwellJr/SeisUnix/wiki/Seismic-Unix-install-on-Ubuntu    
+
+    Note: Install only basic set of codes and X-toolkit applications. No need to install Fortran
+          or OpenGL codes.
+
+    If u have already installed Seismic Un*x then do the above changes in 
+    "$CWPROOT/src/su/main/headers/sustrip.c" file and run 
+            make remake
+            make xtremake
+    command to reinstall Seismic Un*x
+    Note: CWPROOT varible mentiones directory path where you have extracted the Seismic Un*x package.  
+    
+  
+Directory structure
+===================
+    1. src                      - contain source directories
+        1.1 src_cpu             - contains source files for multi-core CPU implementation 
+        1.2 src_acc             - contains source files for GPU implementation using OpenACC
+        1.3 src_gpu             - contains source files for GPU implementation using CUDA for single GPU
+        1.4 src_gpu_multi       - contains source files for GPU implementation using CUDA for multi GPU
+    2. bin                      - contain Executables 
+    3. input                    - contains job cards
+    4. output                   - final output files are stored here  
+    5. data                     - contains input velocity and density model files
+    6. geometry                 - contains geometry information file for seismic data generation 
+    7. log                      - log file generated here
+    
+    Note: Please make sure all above directory are present in installation directory.
+          
+
+Application construction
+========================    
+    1. Install all pre-requisite packages/compilers.
+    2. Modify Makefile.config present in src directory.
+    3. Run make command in different source directories.
+    4. Executable will be generated in bin directory.
+    
+
+Execution instructions
+======================
+    1. Executables created are:
+        1.1 src_cpu             -  SeisAcoMod2D_MULTI_CORE_CPU_V1.0.exe
+        1.2 src_acc             -  SeisAcoMod2D_GPU_OPENACC_V1.0.exe
+        1.3 src_gpu             -  SeisAcoMod2D_GPU_CUDA_V1.0.exe
+        1.4 src_gpu_multi       -  SeisAcoMod2D_MULTI_GPU_CUDA_V1.0.exe
+    2. To execute CPU version execute following command
+            mpirun -np <no. of process> ./SeisAcoMod2D_MULTI_CORE_CPU_V1.0.exe ../input/<jobcard name>
+    3. Executables 1.2, 1.3 & 1.4 require NVidia GPU card attached to the node.
+    4. To execute 1.2, 1.3 execute following command on node having atleat one NVidia card
+            mpirun -np <no. of process> ./SeisAcoMod2D_GPU_OPENACC_V1.0.exe ../input/<jobcard name>  
+                                        or
+            mpirun -np <no. of process> ./SeisAcoMod2D_GPU_CUDA_V1.0.exe ../input/<jobcard name>
+    5. To execute 1.4 execute following command on node having atleat two NVidia card
+            mpirun -np <no. of process> ./SeisAcoMod2D_MULTI_GPU_CUDA_V1.0.exe ../input/<jobcard name>
+
+
+Output Visualization
+====================
+    
+    1. The synthetic seismogram is generated in the directory mentioned in jobcard against
+       "Output Directory", output in this case.
+    2. Go to the directory mentioned against "Output Directory"
+    3. Run the following command
+        ximage < <jobard_name>_seismogram.bin n1=no_of_samples perc=98
+
+       where,
+        <jobcard_name> is name of the jobcard used for generating seismogram
+        no_of_samples is calculated as follows:
+                    no_of_samples = "Time" / "DATA DT"
+     
+
+Job card parameter
+==================
+
+"Model" : "comment"
+    "Velocity" : "Velocity model file name"
+    "Density" : "Density file name"
+
+"Grid points" : "comment"
+    "NX" : "Number of grid points in x direction"
+    "NZ" : "Number of grid points in z direction"
+"comment" : "NY=1 2D,    NY>1 3D"
+
+"Grid size" : "comment"
+    "DX" : "Grid spacing in x direction (in meters)"
+    "DZ" : "Grid spacing in z direction (in meters)"
+
+"Time Stepping" : "comment"
+    "Time" : "wavefield record time (in secs)"
+    "FD DT" : "sampling interval for FD (in secs)"
+    "DATA DT" : "sampling interval at which data to be recorded (in secs) "
+"comment" : "FD DT is samling interval for stable FD"
+"comment" : "DATA DT i sampling interval to record seismogram always >= FD DT"
+
+"Source wavelet" : "comment"
+    "Frequency" : "dominan frequency of source"
+
+"Source and Receiver" : "comment"
+    "Read source receiver flag" : "flag to decide whether to create or read geometry"
+    "if choice=0, Geometry file" : "name of geometry file (read geometry)"
+    "if choice=1, Shot file" : "name of shot file (create geometry)"
+"comment" : "Read flag 0=false 1=true"
+
+"Other job parameter" : "comment"
+    "Output Directory" : "directory in which output is to be created"
+    "Free surface" : "Flag for free surface. Free surface yet not implemented"
+    "Job type New or Restart" : "Job type New or Restart (case sensitive)"
+    "Order of FD Operator" : "FD order. Only 4th order implemented"
+"comment" : "Free surface flag 0=false 1=true"
+
+Bugs
+====
+
+Please report all problems encountered during software construction to
+the mailing list:
+1. Mr. Abhishek Srivastava         abhisheks@cdac.in  
+2. Ms. Richa Rastogi        
+
+You can also send suggestions for improvement of this document to the list.
+
