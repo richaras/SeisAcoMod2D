@@ -3,7 +3,7 @@
 #include <cmath>
 #include <cstring>
 #include <omp.h>
-
+#include <string>
 #include "modelling.h"
 #include "gpu_modelling_kernels.h"
 #define PI 3.141592654
@@ -18,34 +18,35 @@ static int      nz1, nx1, nz, nx, nnz, nnx, N, NJ, ns, ng, fd_nt, real_nt, nts;
 static float    fm, fd_dt, real_dt, dz, dx, _dz, _dx, rec_len/*, vmute, tdmute*/;
 static dim3     dimg0, dimb0;
 
+#define MAX_DEVICE_COUNT 20 //Assume one host(cpu) has maximum 20 GPU's
 
 float   *v0, *h_vel, *h_rho;
 /* variables on device */
 int     *sx_pos, *sz_pos;
-int     *gx_pos[2], *gz_pos[2];
-int     *h_Sxz, *h_Gxz[2];     /* set source and geophone position */
-int     *d_Gxz[2];
+int     *gx_pos[MAX_DEVICE_COUNT], *gz_pos[MAX_DEVICE_COUNT];
+int     *h_Sxz, *h_Gxz[MAX_DEVICE_COUNT];     /* set source and geophone position */
+int     *d_Gxz[MAX_DEVICE_COUNT];
 
 double dtdx, dtdz;
 
 float *bu1, *bu2, *bue;
 float *spg, *spg1, *damp1a1, *damp2a1, *damp1b1, *damp2b1;
 float *damp1a, *damp2a, *damp1b, *damp2b;
-float *d_damp1a[2], *d_damp2a[2], *d_damp1b[2], *d_damp2b[2];
+float *d_damp1a[MAX_DEVICE_COUNT], *d_damp2a[MAX_DEVICE_COUNT], *d_damp1b[MAX_DEVICE_COUNT], *d_damp2b[MAX_DEVICE_COUNT];
 
 double *h_wlt;  //source wavelet
-double *d_wlt[2];
-float *h_dobs[2], *h_temp[2];  // seismogram
-float *d_dobs[2], *d_temp[2];  // seismogram
+double *d_wlt[MAX_DEVICE_COUNT];
+float *h_dobs[MAX_DEVICE_COUNT], *h_temp[MAX_DEVICE_COUNT];  // seismogram
+float *d_dobs[MAX_DEVICE_COUNT], *d_temp[MAX_DEVICE_COUNT];  // seismogram
 
-double *d_p[2], *d_px[2], *d_pz[2], *d_vx[2], *d_vz[2], *d_der2[2], *d_der1[2];
+double *d_p[MAX_DEVICE_COUNT], *d_px[MAX_DEVICE_COUNT], *d_pz[MAX_DEVICE_COUNT], *d_vx[MAX_DEVICE_COUNT], *d_vz[MAX_DEVICE_COUNT], *d_der2[MAX_DEVICE_COUNT], *d_der1[MAX_DEVICE_COUNT];
 
 double *kappa, *kappaw2, *kappaw1;
-double *d_kappa[2], *d_kappaw2[2], *d_kappaw1[2];
+double *d_kappa[MAX_DEVICE_COUNT], *d_kappaw2[MAX_DEVICE_COUNT], *d_kappaw1[MAX_DEVICE_COUNT];
 double *buw2, *buw1;
-double *d_buw2[2], *d_buw1[2];
+double *d_buw2[MAX_DEVICE_COUNT], *d_buw1[MAX_DEVICE_COUNT];
 
-cudaStream_t stream1[2], stream2[2];
+cudaStream_t stream1[MAX_DEVICE_COUNT], stream2[MAX_DEVICE_COUNT];
 
 void expand(float *b, float *a, int npml, int nnz, int nnx, int nz1, int nx1)
 /*< expand domain of 'a' to 'b':  a, size=nz1*nx1; b, size=nnz*nnx;  >*/
@@ -239,11 +240,11 @@ void FDOperator_4(int it, int isource, int device_id)
 void modelling_module(int my_nsrc, geo2d_t *mygeo2d_sp)
 {
     int rank = MPI::COMM_WORLD.Get_rank();    	
-    char log_file[2][1024], seis_file[2][1024], rnk[5], sx_ch[5];
-    FILE *fp_log[2], *fp_seis[2];
+    char log_file[8][1024], seis_file[8][1024], rnk[50], sx_ch[50];
+    FILE *fp_log[8], *fp_seis[8];
     sprintf(rnk, "%d\0", rank);
 
-    int ix, iz, id, is, ig, kt, istart[2], iend[2], dt_factor, indx;
+    int ix, iz, id, is, ig, kt, istart[8], iend[8], dt_factor, indx;
     int device_id = 1, d_count;
     
     // variable init
@@ -397,6 +398,12 @@ void modelling_module(int my_nsrc, geo2d_t *mygeo2d_sp)
     h_Sxz = new int[ns];
     cpu_set_sg(h_Sxz, sx_pos, sz_pos, ns, npml, nnz);
 
+    if(ns%d_count != 0)
+    {
+	cout<<"Total Number of Shots should be completely Divisibly by number of Cuda Devices per node"<<endl;
+	MPI::COMM_WORLD.Abort(-5);
+    }	    
+
     // checking job status - New/Restart
     #pragma omp parallel private(device_id)
     {
@@ -406,18 +413,53 @@ void modelling_module(int my_nsrc, geo2d_t *mygeo2d_sp)
         strcat(log_file[device_id], "_rank");           strcat(log_file[device_id], rnk);  
         strcat(log_file[device_id], ".txt\0");
 
-        if(device_id == 0)
-            iend[0] = ns/2;
+        iend[device_id] = (ns/d_count)*(device_id+1);
+
+	if(strcmp(job_sp->jbtype, "New") == 0)
+	{
+ 	    istart[device_id] = (ns/d_count)*(device_id);
+	}    
+
+
+
+       /* if(device_id == 0)
+            iend[0] = 1;
         else if(device_id == 1)
-            iend[1] = ns;
+            iend[1] = 2;
+	else if(device_id == 2)
+            iend[2] = 3;
+	else if(device_id == 3)
+            iend[3] = 4;
+	else if(device_id == 4)
+            iend[4] = 5;
+	else if(device_id == 5)
+            iend[5] = 6;
+	else if(device_id == 6)
+            iend[6] = 7;
+	else if(device_id == 7)
+            iend[7] = 8;
+
+
 
         if(strcmp(job_sp->jbtype, "New") == 0)
         {
             if(device_id == 0) 
                 istart[0] = 0;
             else if(device_id == 1)
-                istart[1] = ns/2;
-        }
+                istart[1] = 1;
+	    else if(device_id == 2)
+                istart[2] = 2;
+	    else if(device_id == 3)
+                istart[3] = 3;
+	    else if(device_id == 4)
+                istart[4] = 4;
+	    else if(device_id == 5)
+                istart[5] = 5;
+	    else if(device_id == 6)
+                istart[6] = 6;
+	    else if(device_id == 7)
+                istart[7] = 7;
+        }*/
         else if(strcmp(job_sp->jbtype, "Restart") == 0)
         {
             fp_log[device_id] = fopen(log_file[device_id], "r");
@@ -442,9 +484,11 @@ void modelling_module(int my_nsrc, geo2d_t *mygeo2d_sp)
     cout<<"\n Rank: "<<rank<<"   Started Modelling.......";
     // shot loop
 
-    #pragma omp parallel private(is, device_id, ng, ig, kt, indx, sx_ch)
+    #pragma omp parallel private(is, device_id, ng, ig, kt, indx, sx_ch) 
     {   
+	    
             device_id = omp_get_thread_num();
+	    cout<<"device_id="<<device_id<<endl;
             cout<<"\n thread id: "<<device_id<<"  start: "<<istart[device_id];
             cudaSetDevice(device_id);
             check_gpu_error("Failed to initialise device..");
@@ -506,13 +550,18 @@ void modelling_module(int my_nsrc, geo2d_t *mygeo2d_sp)
                 // write seismogram
                 strcpy(seis_file[device_id], job_sp->tmppath);  
                 strcat(seis_file[device_id], job_sp->jobname);
-                strcpy(sx_ch, "\0");                    sprintf(sx_ch, "%.2f\0", sx_pos[is]*dx);     
+		
+		
+                strcpy(sx_ch, "\0");                 /*   sprintf(sx_ch, "%.2f\0", sx_pos[is]*dx);     */
+		strcat(sx_ch,(to_string((sx_pos[is]*dx))).c_str());
                 strcat(seis_file[device_id], "sx");     strcat(seis_file[device_id], sx_ch);
                 strcat(seis_file[device_id], "_seismogram.bin\0");
-
+		//cout<<"File name "<<seis_file[device_id]<<" "<<device_id<<endl;
                 fp_seis[device_id] = fopen(seis_file[device_id], "w");
+
                     fwrite(h_dobs[device_id], sizeof(float), ng*real_nt, fp_seis[device_id]);
                 fclose(fp_seis[device_id]);
+		//cout<<"Closed"<<device_id<<endl;
 
                 delete[] h_dobs[device_id];         h_dobs[device_id] = NULL;
                 delete[] h_temp[device_id];         h_temp[device_id] = NULL;
@@ -520,9 +569,12 @@ void modelling_module(int my_nsrc, geo2d_t *mygeo2d_sp)
 
                 cout<<"\n Rank: "<<rank<<"   thread id: "<<device_id<<"   Shot remaining: "<<iend[device_id]- (is+1);
             }// End of shot loop
-            
+	   // cout<<"End of shot"<<device_id<<endl; 
             device_free(device_id);
+	 //   cout<<"Freed memory"<<endl;
+	 //   cout<<"Freed device_id="<<device_id<<endl;
     }// End of parallel sections
+    cout<<"end of parallel section"<<endl;
 
 }// End of modelling_module function
 
