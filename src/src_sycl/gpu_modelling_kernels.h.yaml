@@ -1,0 +1,355 @@
+---
+MainSourceFile:  '/home/flamingo/SeisAcoMod2D/src/src_gpu/out-dpct-cdac/gpu_modelling_kernels.h'
+Replacements:
+  - FilePath:        '/home/flamingo/SeisAcoMod2D/src/src_gpu/gpu_modelling_kernels.h'
+    Offset:          0
+    Length:          0
+    ReplacementText: "#include <sycl/sycl.hpp>\n#include <dpct/dpct.hpp>\n"
+    ConstantFlag:    ''
+    ConstantOffset:  0
+    InitStr:         ''
+    NewHostVarName:  ''
+    BlockLevelFormatFlag: false
+  - FilePath:        '/home/flamingo/SeisAcoMod2D/src/src_gpu/gpu_modelling_kernels.h'
+    Offset:          212
+    Length:          11
+    ReplacementText: "/* DPCT_ORIG __global__ void cuda_record(double *d_p, float *seis_kt, int *d_Gxz, int ng);*/\nSYCL_EXTERNAL "
+    ConstantFlag:    ''
+    ConstantOffset:  0
+    InitStr:         ''
+    NewHostVarName:  ''
+    BlockLevelFormatFlag: false
+  - FilePath:        '/home/flamingo/SeisAcoMod2D/src/src_gpu/gpu_modelling_kernels.h'
+    Offset:          287
+    Length:          0
+    ReplacementText: ",\n                 sycl::nd_item<3> item_ct1"
+    ConstantFlag:    ''
+    ConstantOffset:  0
+    InitStr:         ''
+    NewHostVarName:  ''
+    BlockLevelFormatFlag: false
+  - FilePath:        '/home/flamingo/SeisAcoMod2D/src/src_gpu/gpu_modelling_kernels.h'
+    Offset:          785
+    Length:          11
+    ReplacementText: "/* DPCT_ORIG __global__ void cuda_fdoperator420(double *vx, double *der2, int nnz, int nnx);*/\nSYCL_EXTERNAL "
+    ConstantFlag:    ''
+    ConstantOffset:  0
+    InitStr:         ''
+    NewHostVarName:  ''
+    BlockLevelFormatFlag: false
+  - FilePath:        '/home/flamingo/SeisAcoMod2D/src/src_gpu/gpu_modelling_kernels.h'
+    Offset:          862
+    Length:          0
+    ReplacementText: ",\n                        sycl::nd_item<3> item_ct1,\n                        sycl::local_accessor<double, 2> s_vx"
+    ConstantFlag:    ''
+    ConstantOffset:  0
+    InitStr:         ''
+    NewHostVarName:  ''
+    BlockLevelFormatFlag: false
+  - FilePath:        '/home/flamingo/SeisAcoMod2D/src/src_gpu/gpu_modelling_kernels.h'
+    Offset:          929
+    Length:          11
+    ReplacementText: "/* DPCT_ORIG __global__ void cuda_fdoperator410(double *vz, double *der1, int nnz, int nnx);*/\nSYCL_EXTERNAL "
+    ConstantFlag:    ''
+    ConstantOffset:  0
+    InitStr:         ''
+    NewHostVarName:  ''
+    BlockLevelFormatFlag: false
+  - FilePath:        '/home/flamingo/SeisAcoMod2D/src/src_gpu/gpu_modelling_kernels.h'
+    Offset:          1006
+    Length:          0
+    ReplacementText: ",\n                        sycl::nd_item<3> item_ct1,\n                        sycl::local_accessor<double, 2> s_vz"
+    ConstantFlag:    ''
+    ConstantOffset:  0
+    InitStr:         ''
+    NewHostVarName:  ''
+    BlockLevelFormatFlag: false
+  - FilePath:        '/home/flamingo/SeisAcoMod2D/src/src_gpu/gpu_modelling_kernels.h'
+    Offset:          1073
+    Length:          11
+    ReplacementText: "/* DPCT_ORIG __global__ void cuda_fdoperator421(double *p, double *der2, int nnz, int nnx);*/\nSYCL_EXTERNAL "
+    ConstantFlag:    ''
+    ConstantOffset:  0
+    InitStr:         ''
+    NewHostVarName:  ''
+    BlockLevelFormatFlag: false
+  - FilePath:        '/home/flamingo/SeisAcoMod2D/src/src_gpu/gpu_modelling_kernels.h'
+    Offset:          1149
+    Length:          0
+    ReplacementText: ",\n                        sycl::nd_item<3> item_ct1,\n                        sycl::local_accessor<double, 2> s_p"
+    ConstantFlag:    ''
+    ConstantOffset:  0
+    InitStr:         ''
+    NewHostVarName:  ''
+    BlockLevelFormatFlag: false
+  - FilePath:        '/home/flamingo/SeisAcoMod2D/src/src_gpu/gpu_modelling_kernels.h'
+    Offset:          1215
+    Length:          11
+    ReplacementText: "/* DPCT_ORIG __global__ void cuda_fdoperator411(double *p, double *der1, int nnz, int nnx);*/\nSYCL_EXTERNAL "
+    ConstantFlag:    ''
+    ConstantOffset:  0
+    InitStr:         ''
+    NewHostVarName:  ''
+    BlockLevelFormatFlag: false
+  - FilePath:        '/home/flamingo/SeisAcoMod2D/src/src_gpu/gpu_modelling_kernels.h'
+    Offset:          1291
+    Length:          0
+    ReplacementText: ",\n                        sycl::nd_item<3> item_ct1,\n                        sycl::local_accessor<double, 2> s_p"
+    ConstantFlag:    ''
+    ConstantOffset:  0
+    InitStr:         ''
+    NewHostVarName:  ''
+    BlockLevelFormatFlag: false
+  - FilePath:        '/home/flamingo/SeisAcoMod2D/src/src_gpu/gpu_modelling_kernels.h'
+    Offset:          1295
+    Length:          11
+    ReplacementText: "/* DPCT_ORIG __global__ void cuda_incr_p(double *px, double *wlt, double *kappa, float fd_dt, float dx, float dz, int isource, int it);*/\nSYCL_EXTERNAL "
+    ConstantFlag:    ''
+    ConstantOffset:  0
+    InitStr:         ''
+    NewHostVarName:  ''
+    BlockLevelFormatFlag: false
+  - FilePath:        '/home/flamingo/SeisAcoMod2D/src/src_gpu/gpu_modelling_kernels.h'
+    Offset:          1488
+    Length:          11
+    ReplacementText: "/* DPCT_ORIG __global__ void cuda_compute_p(double *p, double *px, double *pz, int nnz, int nnx);*/\nSYCL_EXTERNAL "
+    ConstantFlag:    ''
+    ConstantOffset:  0
+    InitStr:         ''
+    NewHostVarName:  ''
+    BlockLevelFormatFlag: false
+  - FilePath:        '/home/flamingo/SeisAcoMod2D/src/src_gpu/gpu_modelling_kernels.h'
+    Offset:          1570
+    Length:          0
+    ReplacementText: ",\n                    sycl::nd_item<3> item_ct1"
+    ConstantFlag:    ''
+    ConstantOffset:  0
+    InitStr:         ''
+    NewHostVarName:  ''
+    BlockLevelFormatFlag: false
+  - FilePath:        '/home/flamingo/SeisAcoMod2D/src/src_gpu/gpu_modelling_kernels.h'
+    Offset:          1724
+    Length:          11
+    ReplacementText: "/* DPCT_ORIG __global__ void cuda_pml_p(double *px, double *pz, double *kappaw2, double *kappaw1, double *der2, double *der1, float *damp2a, float *damp1a, int nnz, int nnx);*/\nSYCL_EXTERNAL "
+    ConstantFlag:    ''
+    ConstantOffset:  0
+    InitStr:         ''
+    NewHostVarName:  ''
+    BlockLevelFormatFlag: false
+  - FilePath:        '/home/flamingo/SeisAcoMod2D/src/src_gpu/gpu_modelling_kernels.h'
+    Offset:          1883
+    Length:          0
+    ReplacementText: ",\n                sycl::nd_item<3> item_ct1"
+    ConstantFlag:    ''
+    ConstantOffset:  0
+    InitStr:         ''
+    NewHostVarName:  ''
+    BlockLevelFormatFlag: false
+  - FilePath:        '/home/flamingo/SeisAcoMod2D/src/src_gpu/gpu_modelling_kernels.h'
+    Offset:          2030
+    Length:          11
+    ReplacementText: "/* DPCT_ORIG __global__ void cuda_pml_v(double *vx, double *vz, double *buw2, double *buw1, double *der2, double *der1, float *damp2b, float *damp1b, int nnz, int nnx);*/\nSYCL_EXTERNAL "
+    ConstantFlag:    ''
+    ConstantOffset:  0
+    InitStr:         ''
+    NewHostVarName:  ''
+    BlockLevelFormatFlag: false
+  - FilePath:        '/home/flamingo/SeisAcoMod2D/src/src_gpu/gpu_modelling_kernels.h'
+    Offset:          2183
+    Length:          0
+    ReplacementText: ",\n                sycl::nd_item<3> item_ct1"
+    ConstantFlag:    ''
+    ConstantOffset:  0
+    InitStr:         ''
+    NewHostVarName:  ''
+    BlockLevelFormatFlag: false
+  - FilePath:        '/home/flamingo/SeisAcoMod2D/src/src_gpu/gpu_modelling_kernels.h'
+    Offset:          2247
+    Length:          11
+    ReplacementText: "/* DPCT_ORIG __global__ void cuda_transpose(float *inp, float *out, int n1, int n2);*/\nSYCL_EXTERNAL "
+    ConstantFlag:    ''
+    ConstantOffset:  0
+    InitStr:         ''
+    NewHostVarName:  ''
+    BlockLevelFormatFlag: false
+  - FilePath:        '/home/flamingo/SeisAcoMod2D/src/src_gpu/gpu_modelling_kernels.h'
+    Offset:          2316
+    Length:          0
+    ReplacementText: ",\n                    sycl::nd_item<3> item_ct1"
+    ConstantFlag:    ''
+    ConstantOffset:  0
+    InitStr:         ''
+    NewHostVarName:  ''
+    BlockLevelFormatFlag: false
+MainSourceFilesDigest:
+  - MainSourceFile:  '/home/flamingo/SeisAcoMod2D/src/src_gpu/gpu_modelling_kernels.h'
+    Digest:          15b20004e3368b0781d59c97e250a0b8
+DpctVersion:     2023.0.0
+MainHelperFileName: dpct
+USMLevel:        ''
+FeatureMap:
+  device.hpp:
+    device_ext:
+      IsCalled:        false
+      FeatureName:     ''
+      SubFeatureMap:
+        device_ext_create_queue:
+          IsCalled:        true
+          CallerSrcFiles:
+            - '/home/flamingo/SeisAcoMod2D/src/src_gpu/gpumodelling.cu'
+          FeatureName:     'device_ext::create_queue'
+          SubFeatureMap:   {}
+        device_ext_default_queue:
+          IsCalled:        true
+          CallerSrcFiles:
+            - '/home/flamingo/SeisAcoMod2D/src/src_gpu/gpumodelling.cu'
+          FeatureName:     'device_ext::default_queue'
+          SubFeatureMap:   {}
+        device_ext_destroy_queue:
+          IsCalled:        true
+          CallerSrcFiles:
+            - '/home/flamingo/SeisAcoMod2D/src/src_gpu/gpumodelling.cu'
+          FeatureName:     'device_ext::destroy_queue'
+          SubFeatureMap:   {}
+    get_current_device:
+      IsCalled:        true
+      CallerSrcFiles:
+        - '/home/flamingo/SeisAcoMod2D/src/src_gpu/gpumodelling.cu'
+      FeatureName:     get_current_device
+      SubFeatureMap:   {}
+    get_default_queue:
+      IsCalled:        true
+      CallerSrcFiles:
+        - '/home/flamingo/SeisAcoMod2D/src/src_gpu/gpumodelling.cu'
+      FeatureName:     get_default_queue
+      SubFeatureMap:   {}
+    select_device:
+      IsCalled:        true
+      CallerSrcFiles:
+        - '/home/flamingo/SeisAcoMod2D/src/src_gpu/gpumodelling.cu'
+      FeatureName:     select_device
+      SubFeatureMap:   {}
+    typedef_queue_ptr:
+      IsCalled:        true
+      CallerSrcFiles:
+        - '/home/flamingo/SeisAcoMod2D/src/src_gpu/gpumodelling.cu'
+      FeatureName:     queue_ptr
+      SubFeatureMap:   {}
+  memory.hpp:
+    async_dpct_memset:
+      IsCalled:        true
+      CallerSrcFiles:
+        - '/home/flamingo/SeisAcoMod2D/src/src_gpu/gpumodelling.cu'
+      FeatureName:     async_dpct_memset
+      SubFeatureMap:   {}
+    async_dpct_memset_2d:
+      IsCalled:        true
+      CallerSrcFiles:
+        - '/home/flamingo/SeisAcoMod2D/src/src_gpu/gpumodelling.cu'
+      FeatureName:     async_dpct_memset
+      SubFeatureMap:   {}
+    async_dpct_memset_3d:
+      IsCalled:        true
+      CallerSrcFiles:
+        - '/home/flamingo/SeisAcoMod2D/src/src_gpu/gpumodelling.cu'
+      FeatureName:     async_dpct_memset
+      SubFeatureMap:   {}
+    dpct_memcpy:
+      IsCalled:        true
+      CallerSrcFiles:
+        - '/home/flamingo/SeisAcoMod2D/src/src_gpu/gpumodelling.cu'
+      FeatureName:     dpct_memcpy
+      SubFeatureMap:   {}
+    dpct_memcpy_2d:
+      IsCalled:        true
+      CallerSrcFiles:
+        - '/home/flamingo/SeisAcoMod2D/src/src_gpu/gpumodelling.cu'
+      FeatureName:     dpct_memcpy
+      SubFeatureMap:   {}
+    dpct_memcpy_3d:
+      IsCalled:        true
+      CallerSrcFiles:
+        - '/home/flamingo/SeisAcoMod2D/src/src_gpu/gpumodelling.cu'
+      FeatureName:     dpct_memcpy
+      SubFeatureMap:   {}
+    dpct_memset:
+      IsCalled:        true
+      CallerSrcFiles:
+        - '/home/flamingo/SeisAcoMod2D/src/src_gpu/gpumodelling.cu'
+      FeatureName:     dpct_memset
+      SubFeatureMap:   {}
+    dpct_memset_2d:
+      IsCalled:        true
+      CallerSrcFiles:
+        - '/home/flamingo/SeisAcoMod2D/src/src_gpu/gpumodelling.cu'
+      FeatureName:     dpct_memset
+      SubFeatureMap:   {}
+    dpct_memset_3d:
+      IsCalled:        true
+      CallerSrcFiles:
+        - '/home/flamingo/SeisAcoMod2D/src/src_gpu/gpumodelling.cu'
+      FeatureName:     dpct_memset
+      SubFeatureMap:   {}
+    memcpy_direction:
+      IsCalled:        true
+      CallerSrcFiles:
+        - '/home/flamingo/SeisAcoMod2D/src/src_gpu/gpumodelling.cu'
+      FeatureName:     memcpy_direction
+      SubFeatureMap:   {}
+CompileTargets:  {}
+OptionMap:
+  AnalysisScopePath:
+    Value:           '/home/flamingo/SeisAcoMod2D/src/src_gpu'
+    Specified:       false
+  AsyncHandler:
+    Value:           'false'
+    Specified:       false
+  CommentsEnabled:
+    Value:           'false'
+    Specified:       false
+  CompilationsDir:
+    Value:           '/home/flamingo/SeisAcoMod2D/src/src_gpu'
+    Specified:       true
+  CtadEnabled:
+    Value:           'false'
+    Specified:       false
+  CustomHelperFileName:
+    Value:           dpct
+    Specified:       false
+  ExperimentalFlag:
+    Value:           '0'
+    Specified:       false
+  ExplicitClNamespace:
+    Value:           'false'
+    Specified:       false
+  ExplicitNamespace:
+    Value:           '20'
+    Specified:       false
+  ExtensionDDFlag:
+    Value:           '0'
+    Specified:       false
+  ExtensionDEFlag:
+    Value:           '4294967295'
+    Specified:       false
+  NDRangeDim:
+    Value:           '3'
+    Specified:       false
+  NoDRYPattern:
+    Value:           'false'
+    Specified:       false
+  OptimizeMigration:
+    Value:           'false'
+    Specified:       false
+  ProcessAll:
+    Value:           'false'
+    Specified:       false
+  RuleFile:
+    Value:           ''
+    Specified:       false
+  SyclNamedLambda:
+    Value:           'false'
+    Specified:       false
+  UsmLevel:
+    Value:           '1'
+    Specified:       false
+...
